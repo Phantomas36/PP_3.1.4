@@ -69,20 +69,24 @@ public class AdminController {
 
     @PatchMapping("/user-update/{id}")
     public String updateUser(@ModelAttribute("user") User user) {
-        User test = new User();
-        test.setId(user.getId());
-        test.setAge(user.getAge());
-        test.setEmail(user.getEmail());
-        test.setRoles((Set<Role>) userService.findById(test.getId()).getRoles());
-        test.setLastName(user.getLastName());
-        test.setUsername(user.getUsername());
-        test.setPassword(userService.findById(test.getId()).getPassword());
+        User existingUser = userService.findById(user.getId());
+
+        existingUser.setAge(user.getAge());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setLastName(user.getLastName());
+        existingUser.setUsername(user.getUsername());
+
+        Set<Role> currentRoles = (Set<Role>) existingUser.getRoles();
+
         if (user.getPassword().isEmpty()) {
-            userService.saveUser(test);
+            existingUser.setPassword(existingUser.getPassword());
         } else {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            userService.saveUser(user);
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }
+
+        existingUser.setRoles(currentRoles);
+
+        userService.saveUser(existingUser);
         return "redirect:/admin";
     }
 }
