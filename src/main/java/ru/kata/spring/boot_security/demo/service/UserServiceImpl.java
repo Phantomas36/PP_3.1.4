@@ -7,9 +7,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.entity.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
-
 import java.util.List;
 
 @Service
@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     @Override
     public void updateUser(User updatedUser, Long id) {
         updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
@@ -43,12 +44,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
-
+    @Transactional
     @Override
     public User saveUser(User user) {
         return userRepository.save(user);
     }
-
+    @Transactional
     @Override
     public void deleteById(Long id) {
         userRepository.deleteById(id);
